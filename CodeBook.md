@@ -1,5 +1,6 @@
 #Hello again,
 #The following explanation will help you understand what functions I created, what they demonstate, and how to interpret my dataset from my R script.
+# 0. Make sure you have the data.table package and plyr package installed and running because my script uses it.
 # 1. The function finaltest produces a matrix of every Test file
 # 2. The function finaltrain produces a matrix of every Train file 
 # 3. The function Meanfinaltest produces a matrix of all the means from all the Test files 
