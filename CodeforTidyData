@@ -1,98 +1,52 @@
+# Step 1: Load packages 
 library(data.table)
+library(dplyr)
 library(plyr)
-subject_train <-read.table("subject_train.txt", header = FALSE)
-x_train <-read.table("x_train.txt", header = FALSE)
-y_train <-read.table("y_train.txt", header = FALSE)
-body_acc_x_train <-read.table("body_acc_x_train.txt", header = FALSE)
-body_acc_y_train <-read.table("body_acc_y_train.txt", header = FALSE)
-body_acc_z_train <-read.table("body_acc_z_train.txt", header = FALSE)
-body_gyro_x_train <-read.table("body_gyro_x_train.txt", header = FALSE)
-body_gyro_y_train <-read.table("body_gyro_y_train.txt", header = FALSE)
-body_gyro_z_train <-read.table("body_gyro_z_train.txt", header = FALSE) 
-total_acc_x_train <-read.table("total_acc_x_train.txt", header = FALSE) 
-total_acc_y_train <-read.table("total_acc_y_train.txt", header = FALSE)
-total_acc_z_train <-read.table("total_acc_z_train.txt", header = FALSE)
-subject_test <-read.table("subject_test.txt", header = FALSE)
-x_test <-read.table("x_test.txt", header = FALSE)
-y_test <-read.table("y_test.txt", header = FALSE)
-body_acc_x_test <-read.table("body_acc_x_test.txt", header = FALSE)
-body_acc_y_test <-read.table("body_acc_y_test.txt", header = FALSE)
-body_acc_z_test <-read.table("body_acc_z_test.txt", header = FALSE)
-body_gyro_x_test <-read.table("body_gyro_x_test.txt", header = FALSE)
-body_gyro_y_test <-read.table("body_gyro_y_test.txt", header = FALSE)
-body_gyro_z_test <-read.table("body_gyro_z_test.txt", header = FALSE)
-total_acc_x_test <-read.table("total_acc_x_test.txt", header = FALSE)
-total_acc_y_test <-read.table("total_acc_y_test.txt", header = FALSE)
-total_acc_z_test <-read.table("total_acc_z_test.txt", header = FALSE)
-names(subject_train)[names(subject_train) == 'V1'] <- 'subject.train'
-names(subject_test)[names(subject_test) == 'V1'] <- 'subject.test'
-names(y_train)[names(y_train) == 'V1'] <- 'y.train'
-names(y_test)[names(y_test) == 'V1'] <- 'y.test'
-old_names_body_acc_x_train <-names(body_acc_x_train)
-new_names_body_acc_x_train <-sub("V", "body_acc_x_train", names(body_acc_x_train))
-body_acc_x_train_f <-setnames(body_acc_x_train, old_names_body_acc_x_train, new_names_body_acc_x_train)
-old_names_body_acc_y_train <-names(body_acc_y_train)
-new_names_body_acc_y_train <-sub("V", "body_acc_y_train", names(body_acc_y_train))
-body_acc_y_train_f <-setnames(body_acc_y_train, old_names_body_acc_y_train, new_names_body_acc_y_train)
-old_names_body_acc_z_train <-names(body_acc_z_train)
-new_names_body_acc_z_train <-sub("V", "body_acc_z_train", names(body_acc_z_train))
-body_acc_z_train_f <-setnames(body_acc_z_train, old_names_body_acc_z_train, new_names_body_acc_z_train)
-old_names_body_gyro_x_train <-names(body_gyro_x_train)
-new_names_body_gyro_x_train <-sub("V", "body_gyro_x_train", names(body_gyro_x_train))
-body_gyro_x_train_f <-setnames(body_gyro_x_train, old_names_body_gyro_x_train, new_names_body_gyro_x_train)
-old_names_body_gyro_y_train <-names(body_gyro_y_train)
-new_names_body_gyro_y_train <-sub("V", "body_gyro_y_train", names(body_gyro_y_train))
-body_gyro_y_train_f <-setnames(body_gyro_y_train, old_names_body_gyro_y_train, new_names_body_gyro_y_train)
-old_names_body_gyro_z_train <-names(body_gyro_z_train)
-new_names_body_gyro_z_train <-sub("V", "body_gyro_z_train", names(body_gyro_z_train))
-body_gyro_z_train_f <-setnames(body_gyro_z_train, old_names_body_gyro_z_train, new_names_body_gyro_z_train)
-old_names_total_acc_x_train <-names(total_acc_x_train)
-new_names_total_acc_x_train <-sub("V", "total_acc_x_train", names(total_acc_x_train))
-total_acc_x_train_f <-setnames(total_acc_x_train, old_names_total_acc_x_train, new_names_total_acc_x_train)
-old_names_total_acc_y_train <-names(total_acc_y_train)
-new_names_total_acc_y_train <-sub("V", "total_acc_y_train", names(total_acc_y_train))
-total_acc_y_train_f <-setnames(total_acc_y_train, old_names_total_acc_y_train, new_names_total_acc_y_train)
-old_names_total_acc_z_train <-names(total_acc_z_train)
-new_names_total_acc_z_train <-sub("V", "total_acc_z_train", names(total_acc_z_train))
-total_acc_z_train_f <-setnames(total_acc_z_train, old_names_total_acc_z_train, new_names_total_acc_z_train)
-old_names_body_acc_x_test <-names(body_acc_x_test)
-new_names_body_acc_x_test <-sub("V", "body_acc_x_test", names(body_acc_x_test))
-body_acc_x_test_f <-setnames(body_acc_x_test, old_names_body_acc_x_test, new_names_body_acc_x_test)
-old_names_body_acc_y_test <-names(body_acc_y_test)
-new_names_body_acc_y_test <-sub("V", "body_acc_y_test", names(body_acc_y_test))
-body_acc_y_test_f <-setnames(body_acc_y_test, old_names_body_acc_y_test, new_names_body_acc_y_test)
-old_names_body_acc_z_test <-names(body_acc_z_test)
-new_names_body_acc_z_test <-sub("V", "body_acc_z_test", names(body_acc_z_test))
-body_acc_z_test_f <-setnames(body_acc_z_test, old_names_body_acc_z_test, new_names_body_acc_z_test)
-old_names_body_gyro_x_test <-names(body_gyro_x_test)
-new_names_body_gyro_x_test <-sub("V", "body_gyro_x_test", names(body_gyro_x_test))
-body_gyro_x_test_f <-setnames(body_gyro_x_test, old_names_body_gyro_x_test, new_names_body_gyro_x_test)
-old_names_body_gyro_y_test <-names(body_gyro_y_test)
-new_names_body_gyro_y_test <-sub("V", "body_gyro_y_test", names(body_gyro_y_test))
-body_gyro_y_test_f <-setnames(body_gyro_y_test, old_names_body_gyro_y_test, new_names_body_gyro_y_test)
-old_names_body_gyro_z_test <-names(body_gyro_z_test)
-new_names_body_gyro_z_test <-sub("V", "body_gyro_z_test", names(body_gyro_z_test))
-body_gyro_z_test_f <-setnames(body_gyro_z_test, old_names_body_gyro_z_test, new_names_body_gyro_z_test)
-old_names_total_acc_x_test <-names(total_acc_x_test)
-new_names_total_acc_x_test <-sub("V", "total_acc_x_test", names(total_acc_x_test)) 
-total_acc_x_test_f <-setnames(total_acc_x_test, old_names_total_acc_x_test,  new_names_total_acc_x_test)
-old_names_total_acc_y_test <-names(total_acc_y_test)
-new_names_total_acc_y_test <-sub("V", "total_acc_y_test", names(total_acc_y_test))
-total_acc_y_test_f <-setnames(total_acc_y_test, old_names_total_acc_y_test, new_names_total_acc_y_test)
-old_names_total_acc_z_test <-names(total_acc_z_test)
-new_names_total_acc_z_test <-sub("V", "total_acc_z_test", names(total_acc_z_test))
-total_acc_z_test_f <-setnames(total_acc_z_test, old_names_total_acc_z_test, new_names_total_acc_z_test)
-old_names_x_train <-names(x_train)
-new_names_x_train <-sub("V", "x.train", names(x_train))
-x_train_f <-setnames(x_train, old_names_x_train, new_names_x_train)
-old_names_x_test <-names(x_test)
-new_names_x_test <-sub("V", "x.test", names(x_test))
-x_test_f <-setnames(x_test, old_names_x_test, new_names_x_test)
-finaltrain <-cbind(subject_train, y_train, x_train_f, body_acc_x_train_f, body_acc_y_train_f, body_acc_y_train_f, body_gyro_x_train_f, body_gyro_y_train_f, body_gyro_z_train_f, total_acc_x_train_f, total_acc_y_train_f, total_acc_z_train_f)
-finaltest <-cbind(subject_test, y_test, x_test_f, body_acc_x_test_f, body_acc_y_test_f, body_acc_y_test_f, body_gyro_x_test_f, body_gyro_y_test_f, body_gyro_z_test_f, total_acc_x_test_f, total_acc_y_test_f, total_acc_z_test_f)
-finaltrain <-cbind(subject_train, y_train, x_train_f, body_acc_x_train_f, body_acc_y_train_f, body_acc_y_train_f, body_gyro_x_train_f, body_gyro_y_train_f, body_gyro_z_train_f, total_acc_x_train_f, total_acc_y_train_f, total_acc_z_train_f)
-Meanfinaltest <-colMeans(finaltest)
-Meanfinaltrain <-colMeans(finaltrain)
-SDfinaltest <-sapply(finaltest, sd)
-SDfinaltrain <-sapply(finaltrain, sd)
-finaldataset <-rbind.fill(finaltrain, finaltest)
+
+# Step 2: Download files to local directory
+url<-"https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%
+20Dataset.zip"
+download.file(url,destfile = "zipped.zip")
+
+# Step 3: Set working directory 
+dir.create("tidy_data_project")
+setwd("tidy_data_project")
+
+# Step 4: Load data into R
+features<-read.table("features.txt",stringsAsFactors = FALSE)[,2]
+X_train<-read.table("X_train.txt",col.names = features)
+Y_train<-read.table("Y_train.txt",col.names = "Activity")
+subject_train<-read.table("subject_train.txt", col.names = "Subject")
+X_test<-read.table("X_test.txt",col.names = features)
+Y_test<-read.table("Y_test.txt",col.names = "Activity")
+subject_test<-read.table("subject_test.txt", col.names = "Subject")
+
+# Step 5: Merge train and test data
+test_data<-cbind(subject_test,Y_test,X_test)
+train_data<-cbind(subject_train,Y_train,X_train)
+full_data<-rbind(test_data,train_data)
+
+# Step 6: Extract only the mean and standard deviation from the dataset 
+features_index<-grep(("mean\\(\\)|std\\(\\)"),features)
+finaldata<-full_data[,c(1,2,features_index+2)]
+
+# Step 7: Uses descriptive activity names replace numbers in activities column
+activity_labels<-c("WALKING","WALKING_UPSTAIRS","WALKING_DOWNSTAIRS","SITTING","STANDING","LAYING")
+finaldata$Activity<-factor(finaldata$Activity,labels = activity_labels)
+
+# Step 8: Appropriately labels the data set with descriptive variable names. 
+
+names(finaldata)<-gsub("mean","-Mean",names(finaldata))
+names(finaldata)<-gsub("std","-Std",names(finaldata))
+names(finaldata)<-gsub("*\\.","",names(finaldata))
+names(finaldata)<- gsub("^t", "time", names(finaldata))
+names(finaldata)<- gsub("^f", "frequency", names(finaldata))
+names(finaldata)<- gsub("X","-X", names(finaldata))
+names(finaldata)<- gsub("Y","-Y", names(finaldata))
+names(finaldata)<- gsub("Z","-Z", names(finaldata))
+
+# Step 9: Make a tidy dataset based on the means and standard deviations
+tidy_data<-finaldata%>%group_by(Activity,Subject)%>%summarise_each(funs(mean))
+
+# Step 10: Write a file of new tidy data set
+write.table(tidy_data, "tidy_data.txt", row.names = FALSE)
